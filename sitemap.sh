@@ -3,6 +3,9 @@
 # url configuration
 URL="https://mcmilk.de/"
 
+# values: always hourly daily weekly monthly yearly never
+FREQ="weekly"
+
 # begin new sitemap
 exec 1> sitemap.xml
 
@@ -13,16 +16,14 @@ echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 
 # print urls
 IFS=$'\r\n' GLOBIGNORE='*' command eval "OPTIONS=($(cat $0.options))"
-find . -type f "${OPTIONS[@]}" -printf "%TY-%Tm-%Td %TH:%TM %p\n" | \
+find . -type f "${OPTIONS[@]}" -printf "%TY-%Tm-%Td%p\n" | \
 while read -r line; do
-  # TIME is ignored...
   DATE=${line:0:10}
-  TIME=${line:11:5}
-  FILE=${line:19}
+  FILE=${line:12}
   echo "<url>"
   echo " <loc>${URL}${FILE}</loc>"
-  echo " <lastmod>${DATE}</lastmod>"
-  echo " <changefreq>weekly</changefreq>"
+  echo " <lastmod>$DATE</lastmod>"
+  echo " <changefreq>$FREQ</changefreq>"
   echo "</url>"
 done
 
